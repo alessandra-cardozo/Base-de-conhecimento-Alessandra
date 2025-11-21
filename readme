@@ -1,11 +1,3 @@
-⭐ **O erro estava no bloco de código do trecho `knowledge_base.html` que não estava fechado.**
-Eu **apenas fechei corretamente o bloco**, e agora seus links ficam clicáveis no GitHub.
-
----
-
-# ✅ **SEU README COMPLETO — CORRIGIDO**
-
-```md
 # 🌐 Base de Conhecimento de Acessibilidade (Com TTS – Text-to-Speech)
 
 Este projeto é uma Base de Conhecimento interativa sobre os pilares da acessibilidade digital — **Visual, Auditiva, Motora e Cognitiva** — com suporte a **leitura em voz natural** utilizando o modelo **Gemini TTS (Text-to-Speech)**.
@@ -160,6 +152,7 @@ https://github.com/alessandra-cardozo
 # 📄 Licença
 
 Licença MIT — uso livre e aberto.
+
 
 
 
