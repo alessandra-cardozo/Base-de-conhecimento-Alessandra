@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Conhecimento de Acessibilidade - Domínio DOM</title>
+    <!-- Adicionando um favicon placeholder para evitar o erro 404 no console -->
+    <link rel="icon" href="https://placehold.co/16x16/4f46e5/ffffff?text=AB">
+    <!-- Incluindo Tailwind CSS para design responsivo e cores vibrantes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuração da Fonte Inter (moderna e legível) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para impacto e cores (Colorido) */
+        :root {
+            --primary-color: #4f46e5; /* Índigo vibrante */
+            --secondary-color: #10b981; /* Esmeralda */
+            --background-color: #f9fafb; /* Fundo claro */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+        }
+        .card {
+            transition: all 0.3s ease-in-out; 
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-4px) scale(1.02); 
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15); 
+        }
+        /* Estilo base para o botão de Play/Pause */
+        .tts-button {
+            background-color: var(--secondary-color);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .tts-button:hover:not(:disabled) {
+            background-color: #059669; /* Esmeralda mais escuro */
+            transform: translateY(-1px); 
+        }
+        .tts-button:disabled {
+            opacity: 0.8; /* Aumentado a opacidade para melhorar a leitura */
+            cursor: not-allowed;
+            /* Adiciona um background sutil para indicar desativação */
+            background-color: #9ca3af; 
+        }
+        /* Estilo para o cartão atualmente selecionado */
+        .selected-card {
+            border-left: 5px solid var(--primary-color);
+            background-color: #eef2ff; /* Índigo muito claro */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        /* Efeito de carregamento customizado */
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- ANIMAÇÃO DE ENTRADA DO CONTEÚDO DETALHADO (FLUIDEZ) --- */
+        .detail-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .detail-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Estilo do modal overlay */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Header Impactante e Colorido -->
+        <header class="text-center mb-10 p-6 bg-indigo-600 rounded-xl shadow-2xl flex items-center justify-between transform hover:scale-[1.00] transition-transform duration-300">
+            <div>
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white mb-1 tracking-wide text-left">
+                    ACESSO PLENO (TTS)
+                </h1>
+                <p class="text-sm text-indigo-200 font-light text-left">
+                    Base de Conhecimento Dinâmica sobre Inclusão
+                </p>
+            </div>
+             <!-- Botão Configuração -->
+            <button id="config-btn" title="Configurar Chave API Gemini" 
+                class="ml-4 p-3 text-amber-300 hover:text-amber-100 transition-colors bg-indigo-700 rounded-full hover:bg-indigo-500 active:scale-95 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M11.096 1.704a.75.75 0 011.808 0l2.583 4.673a.75.75 0 00.563.364l5.163.75a.75.75 0 01.417 1.353l-3.743 3.65a.75.75 0 00-.215.66l.884 5.143a.75.75 0 01-1.09.794l-4.62-2.43a.75.75 0 00-.698 0l-4.62 2.43a.75.75 0 01-1.09-.794l.884-5.143a.75.75 0 00-.215-.66l-3.743-3.65a.75.75 0 01.417-1.353l5.163-.75a.75.75 0 00.563-.364l2.583-4.673zM12 15a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Layout Principal Responsivo (Grid em desktop, Coluna em mobile) -->
+        <main class="grid lg:grid-cols-3 gap-8">
+
+            <!-- Coluna de Navegação/Tópicos (1/3 da largura em desktop) -->
+            <div class="lg:col-span-1 space-y-4">
+                <h2 class="text-2xl font-semibold text-gray-800 border-b-2 pb-2 mb-4 border-indigo-500">
+                    Explore os Tópicos
+                </h2>
+                <!-- Container para os cartões de tópico -->
+                <div id="topic-list" class="space-y-3">
+                    <!-- Cards de Tópico serão injetados aqui dinamicamente pelo JavaScript -->
+                </div>
+            </div>
+
+            <!-- Coluna de Detalhes e Leitura (2/3 da largura em desktop) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-gray-200 min-h-[500px]">
+                <div id="detail-view" class="detail-enter-active">
+                    <!-- Conteúdo de Detalhes será injetado aqui -->
+                    <div class="text-center pt-20">
+                        <svg class="mx-auto h-12 w-12 text-indigo-400 animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="mt-2 text-xl font-medium text-gray-900">Selecione um Tópico</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Clique em um dos cartões ao lado para visualizar os detalhes e ativar a leitura em voz alta.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Painel de Controle de Voz -->
+                <div id="tts-controls" class="mt-6 border-t pt-4 hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                        Controle de Leitura (Voz Feminina)
+                        <span id="key-status-text" class="text-xs ml-2 font-normal p-1 rounded text-red-700 bg-red-100 hidden">
+                            (Chave API Necessária)
+                        </span>
+                    </h3>
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 items-center">
+                        
+                        <!-- Botão de Play / Pausar / Gerar (Principal) -->
+                        <button id="play-button" disabled
+                                class="tts-button flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white focus:outline-none w-full sm:w-auto hover:shadow-xl">
+                            <!-- O ícone será injetado pelo JavaScript para Play/Pause/Loading -->
+                            <span id="play-button-text">Gerar e Tocar</span>
+                            <div id="loading-spinner" class="loading-spinner ml-2 hidden"></div>
+                        </button>
+                        
+                        <!-- Botão de Parar (Stop) - Este é o botão que interrompe a fala -->
+                        <button id="stop-button" disabled
+                                class="px-6 py-3 border border-red-500 text-red-600 text-base font-medium rounded-full shadow-md focus:outline-none w-full sm:w-auto transition-colors hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5 inline mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 9H7V7h2v2zm3 0h-1V7h2v2zm-1 3v-1H7v2h6v-1h-2z" clip-rule="evenodd" />
+                            </svg>
+                            Parar Leitura
+                        </button>
+
+                        <audio id="audio-player" controls class="w-full sm:w-auto hidden"></audio>
+                        <p id="tts-status" class="text-sm text-gray-600 italic"></p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+    <!-- Modal API -->
+    <div id="config-modal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+            <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2 text-amber-500">
+                    <path fill-rule="evenodd" d="M11.096 1.704a.75.75 0 011.808 0l2.583 4.673a.75.75 0 00.563.364l5.163.75a.75.75 0 01.417 1.353l-3.743 3.65a.75.75 0 00-.215.66l.884 5.143a.75.75 0 01-1.09.794l-4.62-2.43a.75.75 0 00-.698 0l-4.62 2.43a.75.75 0 01-1.09-.794l.884-5.143a.75.75 0 00-.215-.66l-3.743-3.65a.75.75 0 01.417-1.353l5.163-.75a.75.75 0 00.563-.364l2.583-4.673zM12 15a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+                Configurar Chave API (TTS)
+            </h2>
+            <p class="text-gray-600 mb-4">
+                Esta aplicação utiliza a API do Gemini para gerar a voz (Text-to-Speech). 
+                Para que a função de leitura funcione, é necessário que **cada usuário** insira a sua própria chave. 
+                Sua chave será salva apenas localmente no seu navegador (`localStorage`).
+            </p>
+            <p class="text-sm text-red-500 mb-4 font-medium p-2 bg-red-50 rounded-lg">
+                ⚠️ **Importante:** Sua chave API deve ser mantida em segredo. Ela não está incluída no código-fonte.
+            </p>
+            <input type="text" id="api-key-input" placeholder="Cole sua chave API aqui (ex: AIzaSy...)" 
+                class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-800 font-mono">
+            <button id="save-key-btn" class="mt-4 w-full p-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700">
+                Salvar e Ativar TTS
+            </button>
+        </div>
+    </div>
+    
+    <div id="alert-box" class="fixed top-4 right-4 p-4 text-sm font-medium rounded-lg shadow-xl hidden z-50"></div>
+
+    <!-- JavaScript Dinâmico e JSON de Dados -->
+    <script type="module">
+        // ------------------------------------------------------------------------------------------------------
+        // INSTRUÇÕES DE SEGURANÇA: Esta aplicação salva a chave API no localStorage do navegador para 
+        // ativar a funcionalidade Text-to-Speech (TTS). A chave NÃO ESTÁ INCLUÍDA no código-fonte.
+        // Qualquer pessoa que clonar o projeto do GitHub precisará inserir a sua PRÓPRIA chave API para o TTS funcionar.
+        // ------------------------------------------------------------------------------------------------------
+        let geminiApiKey = ""; 
+        const API_KEY_STORAGE_KEY = "tts_api_key_gemini";
+        let isKeyConfigured = false;
+        const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+
+        // Variáveis para referenciar os elementos DOM importantes (inicializadas em window.onload)
+        let playButton;
+        let playButtonText;
+        let stopButton;
+        let audioPlayer;
+        let loadingSpinner;
+        let ttsStatus;
+
+
+        // Obtém o URL da API de TTS. O parâmetro key será adicionado no fetch.
+        function getApiUrl() {
+            // A chave é incluída aqui para ser lida pelo Canvas em tempo de execução, 
+            // mas o valor inicial permanece vazio para o usuário preencher.
+            return `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${geminiApiKey}`;
+        }
+        
+        function showAlert(message, type = 'success') {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.textContent = message;
+            alertBox.className = 'fixed top-4 right-4 p-4 text-sm font-medium rounded-lg shadow-xl z-50';
+            alertBox.classList.add(type === 'error' ? 'bg-red-500' : 'bg-green-500', 'text-white');
+            alertBox.classList.remove('hidden');
+            setTimeout(() => alertBox.classList.add('hidden'), 3000);
+        }
+
+        function showConfigModal() { 
+            document.getElementById('api-key-input').value = geminiApiKey; 
+            document.getElementById('config-modal').classList.remove('hidden'); 
+        }
+        
+        function hideConfigModal() { 
+            document.getElementById('config-modal').classList.add('hidden'); 
+        }
+
+        function saveApiKey() {
+            const apiKeyInput = document.getElementById('api-key-input');
+            const newKey = apiKeyInput.value.trim();
+            if (newKey) {
+                geminiApiKey = newKey;
+                localStorage.setItem(API_KEY_STORAGE_KEY, newKey);
+                isKeyConfigured = true;
+                hideConfigModal();
+                showAlert("Chave API salva! O TTS está ativado.");
+                updateKeyStatusText();
+                // Reativa os botões após salvar a chave
+                updatePlayButtonState('IDLE_NOT_GENERATED'); 
+            } else {
+                showAlert("Insira uma chave válida para ativar o TTS.", 'error');
+            }
+        }
+
+        function loadApiKey() {
+            const storedKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+            if (storedKey) {
+                geminiApiKey = storedKey;
+                isKeyConfigured = true;
+            } else {
+                geminiApiKey = "";
+                isKeyConfigured = false;
+            }
+            updateKeyStatusText();
+        }
+        
+        function updateKeyStatusText() {
+            const statusText = document.getElementById('key-status-text');
+            if (isKeyConfigured) {
+                statusText.classList.add('hidden');
+            } else {
+                statusText.classList.remove('hidden');
+                statusText.textContent = '(Chave API Necessária - Clique na engrenagem)';
+            }
+        }
+
+
+        // ----------------------------------------------------
+        // 1. DADOS - (JSON)
+        // ----------------------------------------------------
+
+        const knowledgeBase = [
+            {
+                id: 'visual',
+                title: 'Acessibilidade Visual',
+                icon: '<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>',
+                summary: 'Diretrizes para o uso de leitores de tela e contraste de cores.',
+                content: "A acessibilidade visual foca em garantir que pessoas cegas ou com baixa visão possam acessar e interagir com o conteúdo. Isso inclui o uso de texto alternativo (alt text) em todas as imagens, a estruturação correta do HTML com títulos e navegação semântica, e a garantia de um alto contraste entre texto e fundo. O design deve ser compatível com o zoom da tela e deve permitir o uso eficiente de leitores de tela como NVDA e VoiceOver."
+            },
+            {
+                id: 'auditiva',
+                title: 'Acessibilidade Auditiva',
+                icon: '<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a1 1 0 110-2 1 1 0 010 2z"></path></svg>',
+                summary: 'Legendas, transcrições e alternativas para conteúdo de áudio.',
+                content: "Para a acessibilidade auditiva, o foco é em converter informações de áudio para formatos visuais. É fundamental fornecer legendas sincronizadas (closed captions) para vídeos e transcrições completas para todos os podcasts e clipes de áudio. Além disso, é importante que o design da interface não dependa de sons para transmitir informações ou alertas críticos, garantindo que usuários com surdez ou deficiência auditiva não percam dados importantes."
+            },
+            {
+                id: 'motora',
+                title: 'Acessibilidade Motora',
+                icon: '<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>',
+                summary: 'Navegação por teclado e otimização para dispositivos assistivos.',
+                content: "A acessibilidade motora abrange usuários que podem ter dificuldades em usar um mouse ou tela sensível ao toque, dependendo de teclados, comandos de voz ou outros dispositivos adaptativos. O requisito principal é que toda a funcionalidade do site ou aplicativo possa ser acessada e utilizada por meio da navegação por teclado (tecla TAB). Os estados de foco devem ser visíveis e claros, e o tamanho dos botões e áreas clicáveis deve ser generoso."
+            },
+            {
+                id: 'cognitiva',
+                title: 'Acessibilidade Cognitiva',
+                icon: '<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13a6.002 6.002 0 00-4.243-1.757C6.027 4.78 4.79 5.86 3.75 7.5M12 6.253v13m0-13a6.002 6.002 0 014.243-1.757C17.973 4.78 19.21 5.86 20.25 7.5M12 18.753v-13m0 13a6.002 6.002 0 014.243 1.757C17.973 19.22 19.21 18.14 20.25 16.5M12 18.753v-13m0 13a6.002 6.002 0 00-4.243 1.757C6.027 19.22 4.79 18.14 3.75 16.5"></path></svg>',
+                summary: 'Linguagem simples, estrutura previsível e minimização de distrações.',
+                content: "A acessibilidade cognitiva visa facilitar a compreensão do conteúdo para pessoas com dislexia, déficits de atenção ou dificuldades de aprendizado. As práticas essenciais incluem o uso de linguagem clara e concisa, a formatação de texto com parágrafos curtos e listas, e a manutenção de uma navegação consistente e previsível. Evitar conteúdo piscante ou animado em excesso é crucial, e fornecer glossários ou explicações simples para termos complexos pode ajudar muito."
+            }
+        ];
+
+        // ----------------------------------------------------
+        // 2. UTILIDADES TTS (PCM para WAV)
+        // ----------------------------------------------------
+
+        let audioGenerated = false;
+        let currentAudioUrl = null; 
+
+        // Converte Base64 para ArrayBuffer
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Converte PCM de 16-bit para um Blob WAV reproduzível
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const numSamples = pcm16.length;
+            const bytesPerSample = 2; // 16-bit PCM
+
+            const buffer = new ArrayBuffer(44 + numSamples * bytesPerSample);
+            const view = new DataView(buffer);
+
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+
+            // Cabeçalho RIFF
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + numSamples * bytesPerSample, true);
+            writeString(view, 8, 'WAVE');
+            // Chunk FMT
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * numChannels * bytesPerSample, true);
+            view.setUint16(32, numChannels * bytesPerSample, true);
+            view.setUint16(34, bytesPerSample * 8, true);
+            // Chunk DATA
+            writeString(view, 36, 'data');
+            view.setUint32(40, numSamples * bytesPerSample, true);
+
+            // Dados PCM
+            let offset = 44;
+            for (let i = 0; i < numSamples; i++) {
+                view.setInt16(offset, pcm16[i], true);
+                offset += bytesPerSample;
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+        
+        // ----------------------------------------------------
+        // 3. FUNÇÕES DE CONTROLE DE ESTADO E REPRODUÇÃO
+        // ----------------------------------------------------
+        
+        // Atualiza o texto e ícone do botão principal baseado no estado
+        function updatePlayButtonState(state) {
+            // Usa as variáveis globais de escopo da window.onload
+            const playBtn = playButton;
+            const playBtnText = playButtonText;
+            const stopBtn = stopButton;
+            const loadingSpin = loadingSpinner;
+            
+            // Ícones SVG
+            const playIconSvg = `<svg id="play-icon" class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>`;
+            const pauseIconSvg = `<svg id="play-icon" class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8 7a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1zm3 1a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>`;
+            
+            const existingIcon = playBtn.querySelector('#play-icon');
+            if (existingIcon) existingIcon.remove();
+            if (loadingSpin) loadingSpin.classList.add('hidden'); 
+            
+            // Bloqueia se a chave não estiver configurada
+            if (!isKeyConfigured) {
+                playBtn.disabled = true;
+                stopBtn.disabled = true;
+                playBtnText.textContent = 'Configurar API Key (Obrigatório)'; // Texto atualizado para guiar o utilizador
+                playBtn.insertAdjacentHTML('afterbegin', playIconSvg);
+                return;
+            }
+
+            switch (state) {
+                case 'IDLE_NOT_GENERATED': 
+                    playBtn.disabled = false;
+                    stopBtn.disabled = true; 
+                    playBtnText.textContent = 'Gerar e Tocar';
+                    playBtn.insertAdjacentHTML('afterbegin', playIconSvg);
+                    break;
+                case 'GENERATING': 
+                    playBtn.disabled = true;
+                    stopBtn.disabled = true;
+                    playBtnText.textContent = 'Gerando Áudio...';
+                    loadingSpin.classList.remove('hidden');
+                    break;
+                case 'PLAYING': 
+                    playBtn.disabled = false;
+                    stopBtn.disabled = false; 
+                    playBtnText.textContent = 'Pausar Leitura';
+                    playBtn.insertAdjacentHTML('afterbegin', pauseIconSvg);
+                    break;
+                case 'PAUSED': 
+                    playBtn.disabled = false;
+                    stopBtn.disabled = false; 
+                    playBtnText.textContent = 'Continuar Leitura';
+                    playBtn.insertAdjacentHTML('afterbegin', playIconSvg);
+                    break;
+                case 'STOPPED_OR_ERROR': 
+                    playBtn.disabled = false;
+                    stopBtn.disabled = true; 
+                    playBtnText.textContent = 'Gerar e Tocar'; 
+                    playBtn.insertAdjacentHTML('afterbegin', playIconSvg);
+                    break;
+            }
+        }
+
+        // Interrompe a reprodução de forma limpa (FUNÇÃO DE PARAR)
+        function stopPlayback(silent = false) {
+            // Usa as variáveis globais de escopo da window.onload
+            const audioPlayr = audioPlayer;
+            const ttsStat = ttsStatus;
+
+            if (audioPlayr.src && !audioPlayr.paused) {
+                audioPlayr.pause();
+            }
+            audioPlayr.currentTime = 0; // Volta para o início do áudio
+            audioPlayr.classList.add('hidden');
+            
+            audioGenerated = false; // Força a nova geração de áudio
+            
+            if (!silent) {
+                ttsStat.textContent = '⏹️ Leitura interrompida.';
+            }
+            // Retorna ao estado inicial
+            updatePlayButtonState('IDLE_NOT_GENERATED');
+        }
+
+        // ----------------------------------------------------
+        // 4. FUNÇÃO PRINCIPAL DE GERAÇÃO (TTS)
+        // ----------------------------------------------------
+
+        async function generateAndPlayAudio(text) {
+            // Usa as variáveis globais de escopo da window.onload
+            const audioPlayr = audioPlayer;
+            const ttsStat = ttsStatus;
+            
+            if (!isKeyConfigured) {
+                showConfigModal();
+                ttsStat.textContent = "❌ Por favor, insira sua chave API para habilitar a voz.";
+                return;
+            }
+            
+            // Limpa o player e status antes de gerar
+            audioPlayr.pause();
+            audioPlayr.src = '';
+            audioPlayr.classList.add('hidden');
+            ttsStat.textContent = '';
+            
+            // Libera a URL de objeto anterior se existir
+            if (currentAudioUrl) {
+                URL.revokeObjectURL(currentAudioUrl);
+                currentAudioUrl = null;
+            }
+
+            if (text.trim() === '') {
+                ttsStat.textContent = "Não há texto para ler.";
+                return;
+            }
+
+            updatePlayButtonState('GENERATING');
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Diga em tom amigável e com sotaque de português do Brasil: ${text}` }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            // Voz feminina 'Aoede' (Breezy)
+                            prebuiltVoiceConfig: { voiceName: "Aoede" } 
+                        }
+                    }
+                },
+                model: TTS_MODEL 
+            };
+
+            const apiUrl = getApiUrl();
+            const maxRetries = 3;
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            // Chave inválida - força o modal de configuração
+                            showConfigModal();
+                            throw new Error(`Erro HTTP: ${response.status} - Chave de API inválida. Por favor, configure sua chave.`);
+                        }
+                        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                        const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                        if (!sampleRateMatch) {
+                            throw new Error("Taxa de amostragem não encontrada no MIME type.");
+                        }
+                        const sampleRate = parseInt(sampleRateMatch[1], 10);
+
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        currentAudioUrl = URL.createObjectURL(wavBlob);
+
+                        audioPlayr.src = currentAudioUrl;
+                        audioPlayr.classList.remove('hidden');
+                        audioGenerated = true; 
+                        
+                        // Configura os listeners de reprodução
+                        audioPlayr.onplay = () => { 
+                            ttsStat.textContent = '▶️ Reproduzindo a leitura...';
+                            updatePlayButtonState('PLAYING'); 
+                        };
+                        audioPlayr.onpause = () => { 
+                            ttsStat.textContent = '⏸️ Leitura pausada.';
+                            updatePlayButtonState('PAUSED');
+                        };
+                        audioPlayr.onended = () => { 
+                            ttsStat.textContent = '✅ Leitura concluída.'; 
+                            updatePlayButtonState('IDLE_NOT_GENERATED');
+                            audioGenerated = false; 
+                        };
+                        
+                        audioPlayr.play();
+                        
+                        break; // Sucesso, sai do loop
+                    } else {
+                        throw new Error("Resposta da API de TTS inválida: Sem dados de áudio.");
+                    }
+                } catch (error) {
+                    console.error(`[CONSOLE_ERROR] Tentativa ${attempt + 1} falhou:`, error);
+                    
+                    let displayMessage = error.message.split(' - ')[1] || 'Verifique o console para detalhes.';
+                    
+                    if (error.message.includes('401')) {
+                        displayMessage = "Autenticação Falhou! Por favor, configure sua chave API.";
+                    }
+
+                    ttsStat.textContent = `❌ Erro: ${displayMessage}`;
+                    updatePlayButtonState('STOPPED_OR_ERROR'); 
+
+                    if (attempt < maxRetries - 1) {
+                        const delay = Math.pow(2, attempt) * 1000 + 500;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        ttsStat.textContent = '⛔ Erro fatal: Não foi possível gerar o áudio após várias tentativas.';
+                    }
+                }
+            }
+        }
+
+        // ----------------------------------------------------
+        // 5. LÓGICA DE RENDERIZAÇÃO E EVENTOS (DOM Dinâmico)
+        // ----------------------------------------------------
+
+        let currentSelectedTopicId = null;
+
+        /**
+         * Configura os listeners de click e stop para os botões TTS.
+         * Usa os elementos DOM globais que foram definidos em window.onload.
+         */
+        function setupTtsButtonListeners(topic) {
+            
+            // Remove listeners antigos usando replaceWith (melhor forma de garantir a limpeza)
+            playButton.replaceWith(playButton.cloneNode(true));
+            stopButton.replaceWith(stopButton.cloneNode(true));
+
+            // ATUALIZA AS REFERÊNCIAS GLOBAIS DEPOIS DO CLONE
+            playButton = document.querySelector('#play-button');
+            playButtonText = document.querySelector('#play-button-text'); // Reatribui o texto
+            stopButton = document.querySelector('#stop-button');
+
+            // Listener do Play/Generate
+            playButton.addEventListener('click', () => {
+                if (isKeyConfigured) {
+                    if (audioGenerated) {
+                        // Tenta Pausar ou Tocar (Se já gerado)
+                        if (audioPlayer.paused) {
+                            audioPlayer.play();
+                        } else {
+                            audioPlayer.pause();
+                        }
+                    } else {
+                        // Se não foi gerado, inicia o processo de geração e reprodução
+                        const textToRead = topic.title + ". " + topic.content;
+                        generateAndPlayAudio(textToRead);
+                    }
+                } else {
+                     showConfigModal();
+                }
+            });
+
+            // Listener do Stop (INTERRUPÇÃO DE FALA)
+            stopButton.addEventListener('click', () => {
+                stopPlayback();
+            });
+        }
+
+
+        function renderDetailView(topic) {
+            const detailViewContainer = document.querySelector('#detail-view');
+
+            // 1. ANIMAÇÃO DE SAÍDA
+            detailViewContainer.classList.remove('detail-enter-active');
+            detailViewContainer.classList.add('detail-enter');
+            
+            // Pausa o áudio de forma limpa antes de carregar o novo tópico
+            stopPlayback(true); // 'true' para não exibir mensagem de interrupção
+
+            setTimeout(() => {
+                detailViewContainer.innerHTML = `
+                    <h2 class="text-3xl font-bold text-indigo-600 mb-4">${topic.title}</h2>
+                    <p class="text-gray-600 mb-6 italic">${topic.summary}</p>
+                    <div class="prose max-w-none">
+                        <p class="text-gray-800 leading-relaxed text-lg">${topic.content}</p>
+                    </div>
+                `;
+
+                // 2. ANIMAÇÃO DE ENTRADA
+                detailViewContainer.classList.remove('detail-enter');
+                detailViewContainer.classList.add('detail-enter-active');
+
+                // Exibe os controles de voz
+                document.querySelector('#tts-controls').classList.remove('hidden');
+
+                // Configura os listeners dos novos botões
+                setupTtsButtonListeners(topic);
+                
+                // Configura o estado inicial dos botões (DEPOIS de reatribuir listeners)
+                updatePlayButtonState('IDLE_NOT_GENERATED');
+
+            }, 100); 
+        }
+
+        function renderTopicList() {
+            const topicListContainer = document.querySelector('#topic-list');
+            topicListContainer.innerHTML = ''; 
+
+            for (const topic of knowledgeBase) {
+                const card = document.createElement('div');
+                card.id = `card-${topic.id}`;
+                card.className = "card p-4 rounded-lg bg-white shadow-md flex items-start space-x-4 border border-gray-100";
+                card.setAttribute('data-topic-id', topic.id);
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0'); 
+
+                const iconContainer = document.createElement('div');
+                iconContainer.innerHTML = topic.icon; 
+
+                const textContainer = document.createElement('div');
+                
+                const titleElement = document.createElement('h3');
+                titleElement.className = "font-bold text-lg text-indigo-700";
+                titleElement.textContent = topic.title;
+
+                const summaryElement = document.createElement('p');
+                summaryElement.className = "text-sm text-gray-500";
+                summaryElement.textContent = topic.summary;
+
+                textContainer.appendChild(titleElement);
+                textContainer.appendChild(summaryElement);
+                
+                card.appendChild(iconContainer);
+                card.appendChild(textContainer);
+
+                const listener = () => selectTopic(topic.id);
+                card.addEventListener('click', listener);
+                card.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        listener();
+                    }
+                });
+
+                topicListContainer.appendChild(card);
+            }
+        }
+
+        function selectTopic(id) {
+            const topic = knowledgeBase.find(t => t.id === id);
+            if (!topic) return;
+
+            if (currentSelectedTopicId) {
+                const oldCard = document.querySelector(`#card-${currentSelectedTopicId}`);
+                if (oldCard) oldCard.classList.remove('selected-card');
+            }
+            const newCard = document.querySelector(`#card-${id}`);
+            if (newCard) newCard.classList.add('selected-card');
+            currentSelectedTopicId = id;
+
+            renderDetailView(topic);
+        }
+
+        // ----------------------------------------------------
+        // 6. INICIALIZAÇÃO
+        // ----------------------------------------------------
+
+        window.onload = () => {
+            // Inicializa as referências DOM globais
+            playButton = document.querySelector('#play-button');
+            playButtonText = document.querySelector('#play-button-text');
+            stopButton = document.querySelector('#stop-button');
+            audioPlayer = document.querySelector('#audio-player');
+            loadingSpinner = document.querySelector('#loading-spinner');
+            ttsStatus = document.querySelector('#tts-status');
+
+            // 1. Carrega a chave da API do localStorage
+            loadApiKey();
+            
+            // 2. Renderiza o conteúdo
+            renderTopicList();
+            
+            // 3. Seleciona o primeiro tópico e configura os botões (desativados se a chave estiver faltando)
+            if (knowledgeBase.length > 0) {
+                // Chama selectTopic que, por sua vez, configura os listeners e o estado dos botões
+                selectTopic(knowledgeBase[0].id);
+            }
+
+            // 4. Configura os listeners do modal
+            document.getElementById('config-btn').addEventListener('click', showConfigModal);
+            document.getElementById('save-key-btn').addEventListener('click', saveApiKey);
+            
+            // Fecha o modal clicando fora
+            const configModal = document.getElementById('config-modal');
+            configModal.addEventListener('click', e => { 
+                if (e.target.id === 'config-modal') hideConfigModal(); 
+            });
+            
+            // Salva a chave ao pressionar Enter no campo de input do modal
+            document.getElementById('api-key-input').addEventListener("keydown", e => { 
+                if (e.key === "Enter") saveApiKey(); 
+            });
+            
+            // 5. Se a chave estiver faltando na inicialização, mostra o modal para o utilizador
+            if (!isKeyConfigured) {
+                showConfigModal();
+            }
+        };
+
+    </script>
+</body>
+</html>

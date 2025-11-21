@@ -1,0 +1,257 @@
+
+# 🌐 Base de Conhecimento de Acessibilidade (Com TTS – Text-to-Speech)
+
+Este projeto é uma Base de Conhecimento interativa sobre os pilares da acessibilidade digital — **Visual, Auditiva, Motora e Cognitiva** — com suporte a **leitura em voz natural** utilizando o modelo **Gemini TTS (Text-to-Speech)**.
+
+Desenvolvido em **HTML + Tailwind CSS + JavaScript puro**, funciona em **arquivo único**, oferecendo portabilidade, simplicidade e fácil manutenção.
+O layout é totalmente responsivo, inclusivo e amigável para leitores de tela.
+
+---
+
+# 🧩 Estrutura do Projeto (Arquivo Único)
+
+Todo o projeto está contido em:
+
+```
+knowledge_base.html
+```
+
+Composição:
+
+| Elemento         | Conteúdo                                            | Local                                               |
+| ---------------- | --------------------------------------------------- | --------------------------------------------------- |
+| **HTML**         | Estrutura principal da página                       | Corpo do arquivo                                    |
+| **CSS**          | Layout responsive + Tailwind + estilos customizados | Tag `<style>` e classes Tailwind                    |
+| **JSON (Dados)** | Conteúdo dos tópicos de acessibilidade              | Variável `const knowledgeBase` dentro do `<script>` |
+| **JavaScript**   | Lógica, DOM, TTS, interações e segurança            | `<script type="module">`                            |
+
+Esse formato torna o projeto extremamente portátil e fácil de compartilhar.
+
+---
+
+# 🚀 Funcionalidades Principais
+
+### ✔ Tópicos de Acessibilidade
+
+Informações objetivas sobre os quatro principais pilares da acessibilidade digital.
+
+### ✔ Leitura em Voz Natural (TTS)
+
+Transforma o conteúdo selecionado em áudio, usando o modelo
+**`gemini-2.5-flash-preview-tts`**.
+
+### ✔ Controles Completos de Leitura
+
+* ▶️ Reproduzir
+* ⏸ Pausar
+* ⏹ Parar
+* Texto acompanhado visualmente durante a leitura
+
+### ✔ Segurança na Utilização da API
+
+O projeto **não expõe nenhuma chave de API**.
+Cada usuário deve inserir sua própria chave, que é armazenada exclusivamente:
+
+* no **localStorage**
+* no **próprio navegador**
+* sem envio a servidores
+* sem aparecer no GitHub
+
+Isso garante privacidade e boas práticas de segurança.
+
+---
+
+# 🔧 Como Rodar o Projeto
+
+## 1️⃣ Obter uma Chave API Gemini
+
+1. Acesse **Google AI Studio**
+2. Gere uma nova chave
+3. Copie a chave
+
+---
+
+## 2️⃣ Executar o Projeto
+
+### ✔ Opção A — Abrir diretamente no navegador
+
+* Baixe ou clone o repositório
+* Abra `knowledge_base.html` no navegador
+
+### ✔ Opção B — Executar via servidor local (Recomendado)
+
+1. Instale Node.js ([https://nodejs.org/](https://nodejs.org/))
+2. No terminal, navegue até a pasta do projeto e execute:
+
+```bash
+npx http-server
+```
+
+3. Abra o endereço indicado (ex: `http://localhost:8080`) no seu navegador
+
+---
+
+## 3️⃣ Inserir a Chave API no Aplicativo
+
+Ao abrir a aplicação pela primeira vez, aparecerá um modal pedindo sua chave API.
+Se quiser abrir manualmente:
+
+➡ Clique no ícone **⚙️ Configurações**
+➡ Insira sua chave
+➡ Clique em **Salvar e Ativar TTS**
+
+A chave será armazenada apenas no seu dispositivo.
+
+---
+
+# 🔒 Sobre Segurança
+
+Este projeto segue boas práticas profissionais ao:
+
+* Não incluir chaves no código-fonte
+* Não enviar dados sensíveis para servidores
+* Armazenar a chave apenas no local do usuário
+* Permitir que qualquer pessoa utilize sua própria credencial
+
+Se for implantado em produção (ex: Vercel, Netlify), recomenda-se usar variáveis de ambiente no backend.
+
+---
+
+# 🎨 Características que Tornam o Projeto Interessante
+
+* Interface responsiva e agradável visualmente
+* Código organizado em arquivo único
+* Sincronização visual durante a leitura em voz
+* Uso de JSON embutido para modularidade
+* Integração direta com API TTS
+* Navegação simples e acessível
+* Fácil de usar e compartilhar
+
+---
+
+# 🌟 Destaque — Utilidade • Criatividade • Eficácia • Apresentação
+
+Abaixo apresento uma seção detalhada e prática que explica exatamente **como** e **por que** o projeto atende a cada um dos quatro critérios. Use essa seção no seu README para deixar claro para qualquer visitante (inclusive leigos) os pontos fortes do projeto.
+
+---
+
+## 🧩 Utilidade (o que ele faz e para quem serve)
+
+**Resumo curto:** É uma ferramenta prática para aprender, consultar e aplicar conceitos de acessibilidade digital — especialmente útil para desenvolvedores, instrutores, estudantes e pessoas com deficiência que precisam de conteúdo em áudio.
+
+**Por que é útil:**
+
+* Converte texto em áudio (TTS), ampliando o alcance do conteúdo para pessoas com baixa visão, dislexia ou que preferem ouvir.
+* Reúne, em um único lugar, orientações práticas sobre Visual, Auditiva, Motora e Cognitiva.
+* Arquivo único — fácil de compartilhar em aulas, workshops e portfólios.
+
+**Como provar em 30s (teste rápido):**
+
+1. Abra `knowledge_base.html`.
+2. Clique em um tópico.
+3. Insira sua chave API (modal) e pressione **Gerar e Tocar**.
+   Se o áudio tocar e o texto for destacado, a utilidade está demonstrada.
+
+---
+
+## 🎨 Criatividade (diferenciais e ideias novas)
+
+**Resumo curto:** O projeto combina um formato extremamente portátil (arquivo único) com integração TTS e sincronização visual, criando uma experiência didática e original.
+
+**Diferenciais criativos:**
+
+* Arquivo único (zero configuração para usuários iniciantes).
+* Sincronização visual do texto com a fala (melhora compreensão).
+* Modal de configuração de chave com aviso de segurança — experiência cuidadosa.
+* Design limpo com micro-animações (hover, transições), agradáveis sem distrair.
+
+**Como demonstrar em 30s (elemento criativo):**
+
+* Mostre que o arquivo funciona sem instalar dependências (abrir no navegador).
+* Aponte o modal que pede a chave (boa prática de segurança).
+* Ative o TTS e destaque a sincronia entre áudio e texto.
+
+---
+
+## ⚙️ Eficácia (funciona na prática e resolve o problema)
+
+**Resumo curto:** O sistema cumpre a promessa: gera áudio a partir de texto, controla reprodução, mantém privacidade da chave e roda em navegadores modernos sem backend.
+
+**Por que é eficaz:**
+
+* Fluxo completo e testado: selecionar tópico → gerar áudio → reproduzir/pausar/parar.
+* Tratamento de erros e mensagens claras (ex.: chave inválida, falha na geração).
+* Reuso de componentes (JSON interno) facilita expansão sem reescrever a lógica.
+
+**Como testar passo a passo (verificação técnica rápida):**
+
+1. Abra no servidor local (`npx http-server`).
+2. Insira chave válida.
+3. Gere áudio de um tópico longo; verifique se o player aparece e o áudio tem qualidade reproduzível.
+4. Teste Pause e Stop.
+5. Revise o console para mensagens de erro tratadas com clareza.
+
+---
+
+## 🎯 Apresentação (design, documentação e usabilidade)
+
+**Resumo curto:** Layout profissional, documentação direta (README) e fluxo de usuário intuitivo — tudo pensado para facilitar entendimento mesmo de quem é iniciante.
+
+**Pontos de apresentação fortes:**
+
+* Cabeçalho claro, cards de tópicos, área de detalhe grande e painel de controle TTS.
+* Mensagens visuais e feedbacks (spinner, status de leitura).
+* README completo com instruções de execução e segurança.
+* Arquivo pronto para exibição no portfólio.
+
+**Como destacar durante sua apresentação (roteiro curto):**
+
+1. Mostrar o README no GitHub (explicar segurança da chave).
+2. Abrir `knowledge_base.html` e clicar num tópico.
+3. Inserir chave no modal e tocar o áudio.
+4. Demonstrar Pause/Stop e destacar mensagens de status.
+5. Finalizar mostrando o JSON dos tópicos (fácil edição) para enfatizar extensibilidade.
+
+---
+
+# ✅ Checklist Rápido — Provas que você pode mostrar ao vivo
+
+* [ ] Abrir `knowledge_base.html` em < 30s (sem instalação)
+* [ ] Inserir chave no modal e salvar (fluxo visível)
+* [ ] Gerar áudio com sucesso (▶️)
+* [ ] Pausar (⏸) e Parar (⏹) audio sem erros
+* [ ] Ver destaque do texto durante a leitura (sincronia)
+* [ ] Mostrar logs úteis no console (erros amigáveis)
+* [ ] Editar um tópico no JSON e recarregar para ver alteração imediata
+
+Use esse checklist como roteiro quando for demonstrar — isso mostra domínio e preparo.
+
+---
+
+# 👩‍💻 Autoria
+
+**Alessandra Cardozo**
+Desenvolvedora | Acessibilidade | UX
+
+🔗 **LinkedIn:**
+[https://www.linkedin.com/in/alessandra-cardozo-dos-santos-pcd-634529158](https://www.linkedin.com/in/alessandra-cardozo-dos-santos-pcd-634529158)
+
+🔗 **GitHub:**
+[https://github.com/alessandra-cardozo](https://github.com/alessandra-cardozo)
+
+---
+
+# 📄 Licença
+
+Licença MIT — uso livre e aberto.
+
+---
+
+Se quiser, eu já **insiro essa seção diretamente no seu README no repositório** (se você me der permissão para o texto final), ou posso gerar também:
+
+* ✅ Um **banner** (imagem) para o topo do README
+* 📦 Um **ZIP** pronto com README + arquivo único + assets organizados
+* 🖼️ Prints reais (gerados e colocados na pasta `/assets`)
+* 🗣️ Um **roteiro curto** para você usar ao gravar uma apresentação ou falar ao vivo
+
+Qual desses você quer em seguida?
