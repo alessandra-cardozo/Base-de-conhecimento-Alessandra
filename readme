@@ -131,9 +131,40 @@ Se for implantado em produção (ex: Vercel, Netlify), recomenda-se usar variáv
 ---
 
 # 🌟 Destaque — Utilidade • Criatividade • Eficácia • Apresentação
+🎯 Utilidade
 
-(Conteúdo mantido exatamente como você escreveu.)
+Este projeto resolve um problema real: a falta de material acessível, moderno e interativo sobre acessibilidade digital.
+Permite que qualquer pessoa aprenda com clareza, com leitura por voz, interface inclusiva e estrutura modular por categorias.
 
+💡 Criatividade
+
+Além de ensinar sobre acessibilidade, o próprio projeto é totalmente acessível.
+Incluí recursos como:
+✔ Leitura por voz
+✔ Destaque visual sincronizado
+✔ Navegação por teclado
+✔ Alto contraste
+✔ Layout fluido
+✔ Conteúdo organizado por pilares
+✔ Animações suaves e responsivas
+
+🚀 Eficácia
+
+O projeto entrega conhecimento de forma objetiva, clara e funcional.
+Tudo foi construído usando HTML, CSS, JavaScript e JSON, garantindo leveza, rapidez e compatibilidade com qualquer dispositivo.
+
+🎨 Apresentação
+
+A apresentação do projeto foi cuidadosamente planejada para transmitir profissionalismo e acessibilidade ao mesmo tempo.
+O design é simples, elegante e inclusivo, com:
+✨ Tipografia legível
+✨ Botões grandes e intuitivos
+✨ Estrutura organizada por blocos
+✨ Visual limpo que facilita foco e leitura
+✨ Responsividade total (celular, tablet e desktop)
+✨ Paleta harmônica que favorece conforto visual
+
+A experiência é fluida e agradável, valorizando tanto a estética quanto a funcionalidade — ideal para estudos, portfólio e demonstração profissional.
 ---
 
 👤 Autora  
@@ -145,6 +176,7 @@ GitHub: [github.com/alessandra-cardozo](https://github.com/alessandra-cardozo)
 # 📄 Licença
 
 Licença MIT — uso livre e aberto.
+
 
 
 
